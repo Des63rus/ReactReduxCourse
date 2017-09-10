@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import YTSearch from 'youtube-api-search';
+import _ from 'lodash';
 
 import SearchBar from './components/search_bar';
 import VideoList from './components/video_list'
@@ -8,24 +9,39 @@ import VideoDetail from './components/video_detail'
 
 const API_KEY = 'AIzaSyAYNllwYt065FNt3ewHD9_m8KfcaTDlEeE';
 
-class App extends Component{
-    constructor(props){
+class App extends Component {
+    constructor(props) {
         super(props);
-        
-        this.state = { videos:[], };
-        
-        YTSearch({key : API_KEY, term : 'surfboard'}, (videos) => {
-            this.setState({videos});
-            // this.setState({videos : videos}); - same 
+
+        this.state = {
+            videos: [],
+            selectedVideo: null
+        };
+        this.videoSearch('surfboards');
+
+    }
+
+
+    videoSearch(term) {
+        YTSearch({ key: API_KEY, term: term }, (videos) => {
+            this.setState({
+                videos, //same as : "videos : videos"
+                selectedVideo: videos[0]
+            });
         });
     }
-    
-    render(){ 
-        return ( 
+
+    render() {
+        const videoSearch = _.debounce((term) => { this.videoSearch(term); }, 500); // throttling of user input
+
+        return (
             <div>
-                <SearchBar/>
-                <VideoDetail video={this.state.videos[0]}/>
-                <VideoList videos={this.state.videos}/>
+                <SearchBar onSearchTermChange={videoSearch} />
+                <VideoDetail video={this.state.selectedVideo} />
+                <VideoList
+                    videos={this.state.videos}
+                    onVideoSelect={selectedVideo => this.setState({ selectedVideo })} // passing the callback function down to the videolist -> videoListItem
+                />
             </div>
         );
     }

@@ -1,11 +1,11 @@
-import React from 'react'
+import React from 'react';
 
-const VideoListItem = ({video}) => {
+const VideoListItem = ({video, onVideoSelect}) => {
     //this gets video property from props and assign it to local var video
     const imageUrl = video.snippet.thumbnails.default.url;
 
     return (
-        <li className='list-group-item'> 
+        <li onClick={() => onVideoSelect(video)} className='list-group-item'> 
             <div className='video-list media'>
                 <div className='media-left'>
                     <img src={imageUrl} className='media-object'/>
